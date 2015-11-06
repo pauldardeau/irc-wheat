@@ -89,7 +89,7 @@ if __name__ == '__main__':
     if len(sys.argv) < 4:
         print('usage: python %s channel start_date end_date' % sys.argv[0])
         sys.exit(1)
-    exclude_nicks = ['openstackgerrit']
+    exclude_nicks = ['openstack', 'openstackgerrit']
     exclude_posts = [' has joined ',
                      ' has quit IRC']
 
