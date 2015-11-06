@@ -1,8 +1,13 @@
-import sys
 import irc_wheat
+import sys
 
 
 def parse_date(d):
+    """Parse date string to (yyyy, MM, dd)
+
+        :param d: the date string to parse
+        :returns: parsed date as tuple or None on error
+    """
     date_fields = d.split('-')
     if date_fields and len(date_fields) == 3:
         return (int(date_fields[0]), int(date_fields[1]), int(date_fields[2]))
@@ -10,14 +15,15 @@ def parse_date(d):
         return None
 
 
-def harvest_channel(channel, start_date, end_date, exclude_nicks=None, exclude_posts=None):
+def harvest_channel(channel, start_date, end_date, exclude_nicks=None,
+                    exclude_posts=None):
     """Pull all matching irc posts
 
-       :channel: the irc channel to search
-       :start_date: the starting date of irc entries
-       :end_date: the ending date of irc entries
-       :exclude_nicks: the irc nicknames whose posts are to be ignored
-       :exclude_posts: the substrings to cause posts to be ignored
+       :param channel: the irc channel to search
+       :param start_date: the starting date of irc entries
+       :param end_date: the ending date of irc entries
+       :param exclude_nicks: the irc nicknames whose posts are to be ignored
+       :param exclude_posts: the substrings to cause posts to be ignored
     """
 
     start_fields = parse_date(start_date)
@@ -28,11 +34,11 @@ def harvest_channel(channel, start_date, end_date, exclude_nicks=None, exclude_p
 
     start_year = start_fields[0]
     start_month = start_fields[1]
-    start_day = start_fields[2] 
+    start_day = start_fields[2]
 
     end_year = end_fields[0]
     end_month = end_fields[1]
-    end_day = end_fields[2] 
+    end_day = end_fields[2]
 
     days_in_month = {}
     days_in_month['1'] = 31
@@ -54,7 +60,9 @@ def harvest_channel(channel, start_date, end_date, exclude_nicks=None, exclude_p
     current_day = start_day
 
     while pulling_data:
-        current_date = '%d-%02d-%02d' % (current_year, current_month, current_day)
+        current_date = '%d-%02d-%02d' % (current_year,
+                                         current_month,
+                                         current_day)
         log_entries = irc_wheat.get_channel_entries(channel,
                                                     current_date,
                                                     exclude_nicks,
@@ -77,9 +85,9 @@ def harvest_channel(channel, start_date, end_date, exclude_nicks=None, exclude_p
                     current_year += 1
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     if len(sys.argv) < 4:
-        print 'usage: python %s channel start_date end_date' % sys.argv[0]
+        print('usage: python %s channel start_date end_date' % sys.argv[0])
         sys.exit(1)
     exclude_nicks = ['openstackgerrit']
     exclude_posts = [' has joined ',
@@ -90,4 +98,3 @@ if __name__=='__main__':
                     sys.argv[3],
                     exclude_nicks,
                     exclude_posts)
-

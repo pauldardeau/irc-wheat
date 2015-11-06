@@ -1,6 +1,6 @@
 import requests
-import urllib
 import sys
+import urllib
 
 
 def get_openstack_irc_daily_page(channel, date):
@@ -58,7 +58,7 @@ def parse_page(page_source, exclude_nicks=None, exclude_posts=None):
         pos_end_table = page_source.find(end_table_marker, pos_start_table)
         if pos_end_table > 0:
             pos_start_entries = pos_start_table + len(start_table_marker)
-            markup_entries = page_source[pos_start_entries:pos_end_table] 
+            markup_entries = page_source[pos_start_entries:pos_end_table]
             pos = 0
             parsing = True
             while parsing:
@@ -77,7 +77,7 @@ def parse_page(page_source, exclude_nicks=None, exclude_posts=None):
                         if pos_id_end > -1:
                             pos_ts_start = pos_id_start + 5
                             timestamp = markup_entries[pos_ts_start:pos_id_end]
-                            timestamp= timestamp[1:]
+                            timestamp = timestamp[1:]
                     pos_start_tr_text = pos_end_tr_start_decl + 1
                     tr_text = markup_entries[pos_start_tr_text:pos_row_end]
                     exclude_post = False
@@ -100,17 +100,19 @@ def parse_page(page_source, exclude_nicks=None, exclude_posts=None):
                                                                     pos_end_th)
                                         pos_end_td = tr_text.find('</td>',
                                                                   pos_end_th)
-                                        pos_gt = tr_text.find('>', pos_end_th+5)
+                                        pos_gt = tr_text.find('>',
+                                                              pos_end_th+5)
                                         if pos_start_td > -1 and \
                                            pos_end_td > -1 and \
                                            pos_gt > -1:
-                                            irc_post = tr_text[pos_gt+1:pos_end_td].strip()
+                                            b = pos_gt + 1
+                                            e = pos_end_td
+                                            irc_post = tr_text[b:e].strip()
                     if timestamp and nick and irc_post:
                         exclude_nick = exclude_nicks and nick in exclude_nicks
                         if not exclude_nick:
                             irc_post = html_decode(irc_post)
                             log_entries.append((timestamp, nick, irc_post))
-                            #print '[%s] (%s) %s' % (timestamp, nick, irc_post)
                     pos = pos_row_end + 5
                 else:
                     parsing = False
@@ -132,10 +134,10 @@ def get_channel_entries(channel, date, exclude_nicks=None, exclude_posts=None):
         if log_entries:
             return log_entries
         else:
-            print 'warning: no entries found'
+            print('warning: no entries found')
             return None
     else:
-        print 'warning: page not found %s %s' % (channel, date)
+        print('warning: page not found %s %s' % (channel, date))
         return None
 
 
@@ -145,17 +147,15 @@ def print_irc_entries(log_entries):
        :param: log_entries list of entries to print
     """
     for log_entry in log_entries:
-        print '%s %s %s' % (log_entry[0], log_entry[1], log_entry[2])
+        print('%s %s %s' % (log_entry[0], log_entry[1], log_entry[2]))
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     if len(sys.argv) < 3:
-        print 'usage: python %s irc_channel date' % sys.argv[0]
+        print('usage: python %s irc_channel date' % sys.argv[0])
         sys.exit(1)
     channel = sys.argv[1]
     date = sys.argv[2]
     irc_log_entries = get_channel_entries(channel, date)
     if irc_log_entries:
         print_irc_entries(irc_log_entries)
-
-
